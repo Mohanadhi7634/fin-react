@@ -1,0 +1,390 @@
+import React, { useEffect, useMemo, useCallback, } from "react";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
+import { useDebtors } from "./DebtorContext";
+import "./App.css";
+
+export const User = () => {
+  const { debtors, loading, getAllDebtors ,  fetchAdminLastLogout, lastLogout } = useDebtors();
+ 
+
+  const navigate = useNavigate();
+
+
+
+useEffect(() => {
+  getAllDebtors();
+  fetchAdminLastLogout("mohan"); // always fetch 'mohan' admin's logout
+}, [getAllDebtors, fetchAdminLastLogout]);
+
+
+
+  const handleNavigateToDetails = useCallback(
+    (id) => navigate(`/full-details/${id}`),
+    [navigate]
+  );
+
+
+
+  const totalRemainingBalance = useMemo(
+    () =>
+      debtors.reduce(
+        (total, debtor) =>
+          total +
+          (isNaN(parseFloat(debtor.remainingBalance))
+            ? isNaN(parseFloat(debtor.debtAmount))
+              ? 0
+              : parseFloat(debtor.debtAmount)
+            : parseFloat(debtor.remainingBalance)),
+        0
+      ),
+    [debtors]
+  );
+
+  const totalInterestAmount = useMemo(
+    () =>
+      debtors.reduce(
+        (total, debtor) =>
+          total + (isNaN(parseFloat(debtor.interestAmount)) ? 0 : parseFloat(debtor.interestAmount)),
+        0
+      ),
+    [debtors]
+  );
+
+const toBase64 = (url) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    fetch(url)
+      .then((res) => res.blob())
+      .then((blob) => {
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+      });
+  });
+
+
+const exportPDF = async () => {
+  const pdf = new jsPDF("landscape", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+
+  // Load and place image on top-left
+  try {
+    const imgData = await toBase64("/015-05.jpg"); // Adjust if needed
+
+    const img = new Image();
+    img.src = imgData;
+
+    await new Promise((resolve) => {
+      img.onload = () => {
+        const originalWidth = img.width;
+        const originalHeight = img.height;
+
+        const maxWidth = 50;
+        const maxHeight = 25;
+
+        let imgWidth = maxWidth;
+        let imgHeight = (originalHeight / originalWidth) * imgWidth;
+
+        if (imgHeight > maxHeight) {
+          imgHeight = maxHeight;
+          imgWidth = (originalWidth / originalHeight) * imgHeight;
+        }
+
+        const x = 10;
+        const y = 10;
+        pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight);
+        resolve();
+      };
+    });
+  } catch (err) {
+    console.error("Image load error:", err);
+  }
+
+  // Centered and styled headings
+  const title = "ADHIKESAVAN FINANCE ";
+  pdf.setFontSize(16);
+  pdf.setFont("helvetica", "bold");
+  pdf.setTextColor(0, 102, 204);
+  const titleX = (pageWidth - pdf.getTextWidth(title)) / 2;
+  pdf.text(title, titleX, 20);
+
+  const subtitle = `Details of outstanding amount and persons as on ${moment().format("MMMM YYYY")}`;
+  pdf.setFontSize(11);
+  pdf.setFont("helvetica", "bold");
+  pdf.setTextColor(40, 40, 40);
+  const subtitleX = (pageWidth - pdf.getTextWidth(subtitle)) / 2;
+  pdf.text(subtitle, subtitleX, 27);
+
+  // "Generated on" to top-right
+  const generatedText = `Generated on: ${moment().format("DD MMM YYYY, h:mm A")}`;
+  pdf.setFontSize(10);
+  pdf.setFont("helvetica", "bold");
+  pdf.setTextColor(40, 40, 40);
+  const textWidth = pdf.getTextWidth(generatedText);
+  pdf.text(generatedText, pageWidth - textWidth - 10, 34);
+
+  // Table setup
+  const tableColumn = [
+    "#", "Debt Date", "Name", "Address", "Mobile",
+    "Original Debt", "Remaining", "Interest %", "Interest Amt", "Interest Paid", "Status"
+  ];
+
+  const tableRows = debtors.map((debtor, index) => {
+    const paidMonths = (debtor.interestPaidMonths || []).map((item) => item.month).join(", ");
+    return [
+      debtor.id || index + 1,
+      moment(debtor.debtDate).format("DD/MM/YYYY"),
+      debtor.name,
+      debtor.address,
+      debtor.mobile,
+      `${debtor.originalDebtAmount || debtor.debtAmount}`,
+      `${debtor.remainingBalance}`,
+      `${debtor.interestRate}%`,
+      `${debtor.interestAmount}`,
+      paidMonths || "No payments",
+      parseFloat(debtor.remainingBalance) === 0 ? "PAID" : "Pending",
+    ];
+  });
+
+  tableRows.push([
+    { content: "Total", colSpan: 6, styles: { halign: "right", fontStyle: "bold", fontSize: 11 } },
+    { content: `${totalRemainingBalance.toFixed()}`, styles: { fontStyle: "bold", fontSize: 11 } },
+    { content: "", styles: { fontStyle: "bold", fontSize: 9 } },
+    { content: `${totalInterestAmount.toFixed()}`, styles: { fontStyle: "bold", fontSize: 11 } },
+    { content: "", colSpan: 2, styles: { fontStyle: "bold", fontSize: 9 } }
+  ]);
+
+  autoTable(pdf, {
+    startY: 38,
+    head: [tableColumn],
+    body: tableRows,
+    styles: {
+      fontSize: 10,
+      cellPadding: 1.8,
+      overflow: "linebreak",
+      halign: "center",
+      valign: "middle",
+      lineColor: [0, 0, 0],
+      lineWidth: 0.3,
+      textColor: 20,
+    },
+    headStyles: {
+      fillColor: [200, 200, 200],
+      textColor: 0,
+      fontStyle: "bold",
+    },
+    theme: "grid",
+    margin: { top: 20, left: 10, right: 10 },
+    didDrawPage: (data) => {
+      const pageCount = pdf.internal.getNumberOfPages();
+      pdf.setFontSize(8);
+      pdf.text(
+        `Page ${data.pageNumber} of ${pageCount}`,
+        pdf.internal.pageSize.getWidth() - 30,
+        pdf.internal.pageSize.getHeight() - 10
+      );
+    },
+  });
+
+  pdf.save("DebtorsReport.pdf");
+};
+
+
+
+
+
+
+
+  return (
+    <div>
+
+
+<div className="container-fluid px-3 px-md-5 mt-4">
+
+  {loading ? (
+    <div className="text-center p-5">
+      <div className="spinner-border text-primary" role="status"></div>
+      <p className="mt-3 fs-5">Loading debtors...</p>
+    </div>
+  ) : (
+    <>
+{/* Header */}
+<div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end align-items-center gap-3 mb-3">
+  {/* Image Banner */}
+  <div className="text-center text-md-start">
+    <img 
+      src="/015-05.jpg" 
+      alt="Debtor Logo"
+      className="img-fluid"
+      style={{ maxHeight: "150px", objectFit: "contain" }}
+    />
+  </div>
+
+  {/* Title */}
+  <div className="text-center text-md-start flex-grow-1 pb-md-1">
+    <h2 className="text-primary fw-bold m-0">Debtor List</h2>
+    <p className="text-muted small mt-1 mb-0">Overview of outstanding payments</p>
+  </div>
+
+  {/* Export Button */}
+  <div className="text-center text-md-end">
+    <button
+      className="btn btn-success d-flex align-items-center gap-2 px-3 py-1"
+      onClick={exportPDF}
+      disabled={debtors.length === 0}
+    >
+      <i className="bi bi-file-earmark-arrow-down fs-5"></i>
+      <span className="fw-semibold">Export PDF</span>
+    </button>
+  </div>
+</div>
+
+
+      {/* Info Banner */}
+      {lastLogout && (
+        <div className="mb-4">
+          <div className="alert alert-info shadow-sm fw-semibold fs-5 text-primary text-center mb-2">
+            Details of outstanding amount and persons as on {moment().format("MMMM YYYY")}
+          </div>
+          <div className="text-end text-muted small pe-1">
+            <strong>Last Admin Logout:</strong> {lastLogout}
+          </div>
+        </div>
+      )}
+
+      {/* Table */}
+      <div className="card shadow border-0">
+        <div className="card-body p-0">
+          {debtors.length === 0 ? (
+            <div className="alert alert-warning text-center m-3 fs-5">
+              No debtors found.
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-hover table-bordered mb-0 text-center align-middle">
+                <thead
+                  className="table-primary sticky-top shadow-sm"
+                  style={{ top: 0, zIndex: 1 }}
+                >
+                  <tr>
+                    <th>ID</th>
+                    <th>Debt Date</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Mobile</th>
+                    <th>Original Debt</th>
+                    <th>Remaining Balance</th>
+                    <th>Interest Rate (%)</th>
+                    <th>Interest Amount</th>
+                    <th className="text-start ps-3">Interest Paid</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {debtors.map((debtor, index) => {
+                    const isAccountClosed = parseFloat(debtor.remainingBalance) === 0;
+                    return (
+                      <tr
+                        key={debtor._id || index}
+                        style={{ opacity: isAccountClosed ? 0.6 : 1 }}
+                      >
+                        <td>{debtor.id}</td>
+                        <td>{moment(debtor.debtDate).format("DD/MM/YYYY")}</td>
+                        <td>{debtor.name}</td>
+                        <td>{debtor.address}</td>
+                        <td>{debtor.mobile}</td>
+                        <td>₹{(debtor.originalDebtAmount || debtor.debtAmount)?.toFixed()}</td>
+                        <td>₹{debtor.remainingBalance?.toFixed()}</td>
+                        <td>{debtor.interestRate}%</td>
+                        <td>₹{debtor.interestAmount?.toFixed()}</td>
+                        <td className="text-start" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                          {debtor.interestPaidMonths?.length ? (
+                            debtor.interestPaidMonths.map((item) => item.month).join(", ")
+                          ) : (
+                            <small className="text-muted">No payments</small>
+                          )}
+                        </td>
+                        <td>
+                          <span
+                            className={`badge rounded-pill fw-semibold ${
+                              isAccountClosed ? "bg-danger-subtle text-danger" : "bg-success-subtle text-success"
+                            }`}
+                          >
+                            {isAccountClosed ? "PAID" : "Pending"}
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => handleNavigateToDetails(debtor._id)}
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot className="table-light fw-bold">
+                  <tr>
+                    <td colSpan="6" className="text-end">Total</td>
+                    <td>₹{totalRemainingBalance}</td>
+                    <td></td>
+                    <td>₹{totalInterestAmount}</td>
+                    <td colSpan="3"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  )}
+</div>
+
+
+
+ </div>
+  );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

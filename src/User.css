@@ -1,0 +1,26 @@
+.table th,
+.table td {
+  vertical-align: middle !important;
+  font-size: 0.95rem;
+}
+
+.custom-bordered-table th,
+.custom-bordered-table td {
+  border: 1px solid #dee2e6;
+}
+
+.table thead th {
+  background-color: #f1f9ff;
+}
+
+.badge.bg-success-subtle {
+  background-color: #e6ffed !important;
+  color: #198754 !important;
+}
+
+.badge.bg-danger-subtle {
+  background-color: #ffe6e6 !important;
+  color: #dc3545 !important;
+}
+
+

@@ -1,0 +1,36 @@
+/* src/Navbar.css */
+.custom-navbar {
+  background-color: #343a40;
+  color: white;
+}
+
+.text-brand {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.text-brand:hover {
+  color: #ffc107;
+}
+
+.nav-link {
+  color: #ffffff !important;
+  transition: 0.2s;
+}
+
+.nav-link:hover {
+  color: #ffc107 !important;
+}
+
+.nav-modern {
+  font-weight: 500;
+}
+
+.active-link {
+  border-bottom: 2px solid #ffc107;
+  color: #ffc107 !important;
+}
+th {
+  text-align: -webkit-match-parent;
+  text-align: inherit;
+}
