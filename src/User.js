@@ -209,21 +209,21 @@ const exportPDF = async () => {
   ) : (
     <>
 {/* Header */}
-<div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end align-items-center gap-3 mb-3">
+<div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-3 border-bottom pb-2">
   {/* Image Banner */}
   <div className="text-center text-md-start">
-    <img 
-       src={`${process.env.PUBLIC_URL}/015-05.jpg`} 
+    <img
+      src={`${process.env.PUBLIC_URL}/015-05.jpg`}
       alt="Debtor Logo"
       className="img-fluid"
-      style={{ maxHeight: "150px", objectFit: "contain" }}
+      style={{ maxHeight: "100px", objectFit: "contain" }}
     />
   </div>
 
   {/* Title */}
-  <div className="text-center text-md-start flex-grow-1 pb-md-1">
-    <h2 className="text-primary fw-bold m-0">Debtor List</h2>
-    <p className="text-muted small mt-1 mb-0">Overview of outstanding payments</p>
+  <div className="text-center text-md-start flex-grow-1">
+    <h4 className="text-primary fw-bold mb-1">Debtor List</h4>
+    <p className="text-muted mb-0" style={{ fontSize: "0.85rem" }}>Overview of outstanding payments</p>
   </div>
 
   {/* Export Button */}
@@ -232,25 +232,29 @@ const exportPDF = async () => {
       className="btn btn-success d-flex align-items-center gap-2 px-3 py-1"
       onClick={exportPDF}
       disabled={debtors.length === 0}
+      style={{ fontSize: "0.875rem" }}
     >
-      <i className="bi bi-file-earmark-arrow-down fs-5"></i>
+      <i className="bi bi-file-earmark-arrow-down fs-6"></i>
       <span className="fw-semibold">Export PDF</span>
     </button>
   </div>
 </div>
 
+{/* Info Banner */}
+{lastLogout && (
+  <div className="mb-2">
+    <div className="alert alert-info py-1 px-2 mb-1 text-primary text-center rounded-2 fw-semibold fs-6">
+      Details of outstanding amount and persons as on <strong>{moment().format("MMMM YYYY")}</strong>
+    </div>
 
-      {/* Info Banner */}
-      {lastLogout && (
-        <div className="mb-4">
-          <div className="alert alert-info shadow-sm fw-semibold fs-5 text-primary text-center mb-2">
-            Details of outstanding amount and persons as on {moment().format("MMMM YYYY")}
-          </div>
-          <div className="text-end text-muted small pe-1">
-            <strong>Last Admin Logout:</strong> {lastLogout}
-          </div>
-        </div>
-      )}
+    <div className="text-end text-muted small pe-1">
+      <strong>Last Admin Logout:</strong> {lastLogout}
+    </div>
+  </div>
+)}
+
+
+
 
       {/* Table */}
       <div className="card shadow border-0">
@@ -262,10 +266,8 @@ const exportPDF = async () => {
           ) : (
             <div className="table-responsive">
               <table className="table table-hover table-bordered mb-0 text-center align-middle">
-                <thead
-                  className="table-primary sticky-top shadow-sm"
-                  style={{ top: 0, zIndex: 1 }}
-                >
+                <thead className="table-primary sticky-top shadow-sm fs-6" style={{ top: 0, zIndex: 1 }}>
+
                   <tr>
                     <th>ID</th>
                     <th>Debt Date</th>

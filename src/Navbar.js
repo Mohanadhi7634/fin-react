@@ -63,7 +63,7 @@ const Navbar = ({ isAuthenticated }) => {
         <div className="container-fluid px-4">
           <Link className="navbar-brand d-flex align-items-center gap-2 text-brand">
             <i className="bi bi-speedometer2 fs-4"></i>
-            <span className="fs-5 fw-bold">Aadhikesavan Finance</span>
+            <span className="fs-5 fw-bold">Adhikesavan Finance</span>
           </Link>
 
           <button
