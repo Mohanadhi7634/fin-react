@@ -305,12 +305,29 @@ pdf.text(`Rs.${totals.interest.toFixed()} /-`, label3X + 33, y);
     );
   }
 
+  const getFullMonthName = (shortMonthYear) => {
+  if (!shortMonthYear) return "";
+  const [shortMonth, shortYear] = shortMonthYear.split(" ");
+  const shortToIndex = {
+    Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+    Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+  };
+  const monthIndex = shortToIndex[shortMonth];
+  const fullYear = 2000 + parseInt(shortYear);
+  const date = new Date(fullYear, monthIndex);
+  return date.toLocaleString("en-GB", { month: "long", year: "numeric" });
+};
+
+
   const noDebtors = debtors.length === 0;
 
   return (
     <div className="container mt-4">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-3">
-        <h4 className="text-primary m-0">{selectedMonth} Overall In & Out Summary</h4>
+<h4 className="text-primary m-0">
+  {getFullMonthName(selectedMonth)} Overall In & Out Summary
+</h4>
+
         <div className="d-flex flex-wrap gap-2">
           <button className="btn btn-success btn-sm" onClick={exportPDF} disabled={noDebtors}>
             <i className="bi bi-download"></i> Export as PDF
