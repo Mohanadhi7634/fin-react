@@ -13,6 +13,8 @@ export const User = () => {
   const [blurTotals, setBlurTotals] = useState(false);
 
 
+
+
   const navigate = useNavigate();
 
 
@@ -200,7 +202,8 @@ const exportPDF = async () => {
     <div>
 
 
-<div className="container-fluid px-3 px-md-5 mt-4">
+<div className="w-100 px-0 mt-2">
+
 
   {loading ? (
     <div className="text-center p-5">
@@ -211,61 +214,46 @@ const exportPDF = async () => {
     <>
 {/* Header */}
 <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-3 border-bottom pb-2">
-  {/* Left: Image */}
+  {/* Logo */}
   <div className="text-center text-md-start">
     <img
       src={`${process.env.PUBLIC_URL}/015-05.jpg`}
       alt="Debtor Logo"
       className="img-fluid"
-      style={{ maxHeight: "100px", objectFit: "contain" }}
+      style={{ maxHeight: "120px", objectFit: "contain" }}
     />
   </div>
 
-  {/* Middle: Title */}
-<div className="text-center text-md-start flex-grow-1">
-  <h4 className="text-primary fw-bold mb-1">Debtor List</h4>
-  <p className="text-muted mb-0 text-nowrap text-truncate">
-    Overview of outstanding payments
-  </p>
-</div>
-
-
-  {/* Right: Buttons */}
-<div className="w-100 w-md-auto">
-  <div className="d-flex flex-row flex-md-column justify-content-between align-items-center align-items-md-end gap-2">
-    
-    {/* Export Button */}
-    <button
-      className="btn btn-success d-flex align-items-center gap-2 px-3 py-2"
-      onClick={exportPDF}
-      disabled={debtors.length === 0}
-      style={{
-        fontSize: "0.875rem",
-        width: "125px",          // fixed width
-        whiteSpace: "nowrap"     // prevents wrapping
-      }}
+  {/* Title */}
+  <div className="text-center text-md-start flex-grow-1">
+    <h4
+      className="text-primary fw-bold mb-1"
+      style={{ cursor: "pointer" }}
+      onClick={() => setBlurTotals((prev) => !prev)}
     >
-      <i className="bi bi-file-earmark-arrow-down "></i>
-      <span className="fw-semibold">Export PDF</span>
-    </button>
+      Debtor List
+    </h4>
+<p
+  className="text-muted mb-0 text-nowrap overflow-hidden text-truncate"
+  style={{ fontSize: "0.85rem", maxWidth: "100%" }}
+>
+  Overview of outstanding payments
+</p>
 
-    {/* Blur Toggle */}
-    <div className="form-check form-switch d-flex align-items-center m-0">
-      <input
-        className="form-check-input"
-        type="checkbox"
-        id="blurToggle"
-        checked={blurTotals}
-        onChange={() => setBlurTotals(!blurTotals)}
-      />
-      <label
-        className="form-check-label ms-2 text-muted small"
-        htmlFor="blurToggle"
-      >
-        Blur Totals
-      </label>
-    </div>
   </div>
+
+  {/* Right aligned Export Button */}
+{/* Responsive Export Button */}
+<div className="w-100 w-md-auto d-flex justify-content-center justify-content-md-end">
+  <button
+    className="btn btn-success d-flex align-items-center gap-2 px-3 py-1"
+    onClick={exportPDF}
+    disabled={debtors.length === 0}
+    style={{ fontSize: "0.875rem" }}
+  >
+    <i className="bi bi-file-earmark-arrow-down fs-6"></i>
+    <span className="fw-semibold">Export PDF</span>
+  </button>
 </div>
 
 </div>

@@ -59,7 +59,7 @@ const Navbar = ({ isAuthenticated }) => {
         </div>
       )}
 
-      <nav className="navbar navbar-expand-lg custom-navbar shadow-sm sticky-top">
+      <nav className="navbar navbar-expand-lg custom-navbar shadow-sm sticky-top" >
         <div className="container-fluid px-4">
           <Link className="navbar-brand d-flex align-items-center gap-2 text-brand">
             <i className="bi bi-speedometer2 fs-4"></i>

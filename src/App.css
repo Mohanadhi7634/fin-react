@@ -37,51 +37,17 @@
   }
 }
 
-
-
-/* App.css */
-.thead-gold {
-  background-color: #5f6411bc !important; /* Gold background */
-  color: #fcfcfc !important;               /* Black text for contrast */
-}
-
-.thead-gold th {
-  background-color:#5f6411bc !important;
-  color: #fcfcfc !important;
-  font-weight: bold;
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
 
 
-.custom-bordered-table th,
-.custom-bordered-table td {
-  border: 1.5px solid #343a40 !important; /* Darker border */
-}
 
-.custom-bordered-table thead th {
-  background-color: #e3f2fd; /* Light blue head */
-  color: #212529;
-  font-weight: bold;
-}
 
-.custom-bordered-table tfoot td {
-  background-color: #f8f9fa;
-  font-weight: bold;
-}
-
-.custom-bordered-table tbody tr {
-  transition: background-color 0.2s;
-}
-
-.custom-bordered-table tbody tr:hover {
-  background-color: #f1f1f1;
-}
-
-.blurred-text {
-  filter: blur(4px);
-  user-select: none;
-  transition: filter 0.3s ease;
-}
 
 
 
