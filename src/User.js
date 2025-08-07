@@ -55,17 +55,21 @@ useEffect(() => {
     [debtors]
   );
 
-const toBase64 = (url) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    fetch(url)
-      .then((res) => res.blob())
-      .then((blob) => {
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-      });
-  });
+const toBase64 = async (url) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = () => reject("Failed to convert image to base64.");
+    });
+  } catch (error) {
+    console.warn("Image fetch failed:", error);
+    return null; // Return null if image fails to load
+  }
+};
 
 
 const exportPDF = async () => {
@@ -73,36 +77,27 @@ const exportPDF = async () => {
   const pageWidth = pdf.internal.pageSize.getWidth();
 
   // Load and place image on top-left
-  try {
-    const imgData = await toBase64("/015-05.jpg"); // Adjust if needed
-
+   // Optional: Image
+  const imgData = await toBase64(`${process.env.PUBLIC_URL}/015-05.jpg`);
+  if (imgData) {
     const img = new Image();
     img.src = imgData;
 
     await new Promise((resolve) => {
       img.onload = () => {
-        const originalWidth = img.width;
-        const originalHeight = img.height;
-
-        const maxWidth = 50;
-        const maxHeight = 25;
-
+        const maxWidth = 50, maxHeight = 25;
         let imgWidth = maxWidth;
-        let imgHeight = (originalHeight / originalWidth) * imgWidth;
-
+        let imgHeight = (img.height / img.width) * imgWidth;
         if (imgHeight > maxHeight) {
           imgHeight = maxHeight;
-          imgWidth = (originalWidth / originalHeight) * imgHeight;
+          imgWidth = (img.width / img.height) * imgHeight;
         }
-
-        const x = 10;
-        const y = 10;
-        pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight);
+        pdf.addImage(imgData, "JPEG", 10, 10, imgWidth, imgHeight);
         resolve();
       };
     });
-  } catch (err) {
-    console.error("Image load error:", err);
+  } else {
+    console.log("Skipping image in PDF - image not found.");
   }
 
   // Centered and styled headings
@@ -218,7 +213,7 @@ const exportPDF = async () => {
   {/* Image Banner */}
   <div className="text-center text-md-start">
     <img 
-      src="/015-05.jpg" 
+       src={`${process.env.PUBLIC_URL}/015-05.jpg`} 
       alt="Debtor Logo"
       className="img-fluid"
       style={{ maxHeight: "150px", objectFit: "contain" }}
