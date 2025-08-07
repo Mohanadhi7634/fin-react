@@ -323,28 +323,45 @@ pdf.text(`Rs.${totals.interest.toFixed()} /-`, label3X + 33, y);
 
   return (
     <div className="container mt-4">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-3">
-<h4 className="text-primary m-0">
-  {getFullMonthName(selectedMonth)} Overall In & Out Summary
-</h4>
+      
+<div className="bg-light rounded-3 p-3 p-md-4 mb-4 shadow-sm border border-secondary-subtle">
+  <div className="row g-3 align-items-center">
 
-        <div className="d-flex flex-wrap gap-2">
-          <button className="btn btn-success btn-sm" onClick={exportPDF} disabled={noDebtors}>
-            <i className="bi bi-download"></i> Export as PDF
-          </button>
-          <select
-            className="form-select form-select-sm"
-            style={{ width: "200px" }}
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            disabled={noDebtors}
-          >
-            {availableMonths.map((month, idx) => (
-              <option key={idx} value={month}>{month}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+    {/* Title */}
+    <div className="col-12 col-md-6 text-center text-md-start">
+      <h5 className="text-primary fw-semibold mb-0 d-flex justify-content-center justify-content-md-start align-items-center gap-2">
+        <i className="bi bi-bar-chart-line-fill"></i>
+        Overall In & Out Summary
+      </h5>
+    </div>
+
+    {/* Controls */}
+    <div className="col-12 col-md-6 d-flex justify-content-center justify-content-md-end flex-wrap gap-2">
+      <select
+        className="form-select form-select-sm w-auto"
+        value={selectedMonth}
+        onChange={(e) => setSelectedMonth(e.target.value)}
+        disabled={noDebtors}
+      >
+        {availableMonths.map((month, idx) => (
+          <option key={idx} value={month}>{month}</option>
+        ))}
+      </select>
+
+      <button
+        className="btn btn-sm btn-primary"
+        onClick={exportPDF}
+        disabled={noDebtors}
+      >
+        <i className="bi bi-download me-1"></i>
+        Export PDF
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
 
       {noDebtors ? (
         <div className="text-center">
@@ -353,7 +370,13 @@ pdf.text(`Rs.${totals.interest.toFixed()} /-`, label3X + 33, y);
       ) : (
         <>
           <div className="mb-3 text-center">
-            <h5 className="fw-semibold">Transactions for {selectedMonth}</h5>
+<h5 className="fw-semibold">
+  Transactions for{" "}
+  <span className="text-primary fw-bold">
+    {getFullMonthName(selectedMonth)}
+  </span>
+</h5>
+
           </div>
 
           <div className="table-responsive">
@@ -426,7 +449,7 @@ pdf.text(`Rs.${totals.interest.toFixed()} /-`, label3X + 33, y);
             </div>
             <div className="col-md-4">
               <div className="p-2 bg-primary-subtle rounded shadow-sm">
-                <strong>Total Interest Paid:</strong>
+                <strong>Income of this Month (Interest)</strong>
                 <div className="text-primary fw-bold">₹{totals.interest.toFixed(2)}</div>
               </div>
             </div>

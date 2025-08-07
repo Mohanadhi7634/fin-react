@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback, } from "react";
+import React, { useEffect, useMemo, useCallback,useState } from "react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,7 +10,8 @@ import "./App.css";
 
 export const User = () => {
   const { debtors, loading, getAllDebtors ,  fetchAdminLastLogout, lastLogout } = useDebtors();
- 
+  const [blurTotals, setBlurTotals] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -209,8 +210,8 @@ const exportPDF = async () => {
   ) : (
     <>
 {/* Header */}
-<div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-3 border-bottom pb-2">
-  {/* Image Banner */}
+<div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-3 border-bottom pb-2">
+  {/* Left: Image */}
   <div className="text-center text-md-start">
     <img
       src={`${process.env.PUBLIC_URL}/015-05.jpg`}
@@ -220,25 +221,57 @@ const exportPDF = async () => {
     />
   </div>
 
-  {/* Title */}
-  <div className="text-center text-md-start flex-grow-1">
-    <h4 className="text-primary fw-bold mb-1">Debtor List</h4>
-    <p className="text-muted mb-0" style={{ fontSize: "0.85rem" }}>Overview of outstanding payments</p>
-  </div>
+  {/* Middle: Title */}
+<div className="text-center text-md-start flex-grow-1">
+  <h4 className="text-primary fw-bold mb-1">Debtor List</h4>
+  <p className="text-muted mb-0 text-nowrap text-truncate">
+    Overview of outstanding payments
+  </p>
+</div>
 
-  {/* Export Button */}
-  <div className="text-center text-md-end">
+
+  {/* Right: Buttons */}
+<div className="w-100 w-md-auto">
+  <div className="d-flex flex-row flex-md-column justify-content-between align-items-center align-items-md-end gap-2">
+    
+    {/* Export Button */}
     <button
-      className="btn btn-success d-flex align-items-center gap-2 px-3 py-1"
+      className="btn btn-success d-flex align-items-center gap-2 px-3 py-2"
       onClick={exportPDF}
       disabled={debtors.length === 0}
-      style={{ fontSize: "0.875rem" }}
+      style={{
+        fontSize: "0.875rem",
+        width: "125px",          // fixed width
+        whiteSpace: "nowrap"     // prevents wrapping
+      }}
     >
-      <i className="bi bi-file-earmark-arrow-down fs-6"></i>
+      <i className="bi bi-file-earmark-arrow-down "></i>
       <span className="fw-semibold">Export PDF</span>
     </button>
+
+    {/* Blur Toggle */}
+    <div className="form-check form-switch d-flex align-items-center m-0">
+      <input
+        className="form-check-input"
+        type="checkbox"
+        id="blurToggle"
+        checked={blurTotals}
+        onChange={() => setBlurTotals(!blurTotals)}
+      />
+      <label
+        className="form-check-label ms-2 text-muted small"
+        htmlFor="blurToggle"
+      >
+        Blur Totals
+      </label>
+    </div>
   </div>
 </div>
+
+</div>
+
+
+
 
 {/* Info Banner */}
 {lastLogout && (
@@ -328,15 +361,20 @@ const exportPDF = async () => {
                     );
                   })}
                 </tbody>
-                <tfoot className="table-light fw-bold">
-                  <tr>
-                    <td colSpan="6" className="text-end">Total</td>
-                    <td>₹{totalRemainingBalance}</td>
-                    <td></td>
-                    <td>₹{totalInterestAmount}</td>
-                    <td colSpan="3"></td>
-                  </tr>
-                </tfoot>
+ <tfoot className="table-light fw-bold">
+  <tr>
+    <td colSpan="6" className="text-end">Total</td>
+    <td className={blurTotals ? "blurred-text" : ""}>
+      ₹{totalRemainingBalance}
+    </td>
+    <td></td>
+    <td className={blurTotals ? "blurred-text" : ""}>
+      ₹{totalInterestAmount}
+    </td>
+    <td colSpan="3"></td>
+  </tr>
+</tfoot>
+
               </table>
             </div>
           )}

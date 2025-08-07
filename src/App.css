@@ -77,6 +77,11 @@
   background-color: #f1f1f1;
 }
 
+.blurred-text {
+  filter: blur(4px);
+  user-select: none;
+  transition: filter 0.3s ease;
+}
 
 
 
