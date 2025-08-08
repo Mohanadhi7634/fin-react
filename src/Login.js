@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css"; // 👈 make sure this is imported
 import { useDebtors } from "./DebtorContext";
 
 export const Login = ({ setIsAuthenticated }) => {
   const [userID, setUserID] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👈 toggle state
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { loginUser } = useDebtors();
@@ -38,14 +40,14 @@ export const Login = ({ setIsAuthenticated }) => {
 
   return (
     <div className="container mt-5 position-relative">
-      {/* 🔄 Modal-style full-page spinner */}
+      {/* 🔄 Loading Spinner */}
       {loading && (
         <div
           className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75"
           style={{ zIndex: 9999 }}
         >
           <div className="text-center">
-            <div className="spinner-border text-primary" role="status" style={{ width: "3rem", height: "3rem" }}></div>
+            <div className="spinner-border text-primary" style={{ width: "3rem", height: "3rem" }}></div>
             <div className="mt-3 fw-bold text-primary">Authenticating...</div>
           </div>
         </div>
@@ -65,16 +67,26 @@ export const Login = ({ setIsAuthenticated }) => {
           />
         </div>
 
-        <div className="mb-3">
-          <input
-            type="password"
-            className="form-control"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-          />
-        </div>
+        {/* 👁️ Password with toggle */}
+<div className="mb-3 position-relative">
+  <input
+    type={showPassword ? "text" : "password"}
+    className="form-control"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") handleLogin();
+    }}
+    disabled={loading}
+  />
+  <i
+    className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"} position-absolute top-50 end-0 translate-middle-y me-3`}
+    style={{ cursor: "pointer" }}
+    onClick={() => setShowPassword(!showPassword)}
+  ></i>
+</div>
+
 
         <button
           className="btn btn-primary w-100"

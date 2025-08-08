@@ -17,6 +17,7 @@ export const Admin = () => {
     interestAmount: "",
     bondPapers: [],
     checkLeaves: [],
+     comment: "", // <-- Add this
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -132,7 +133,8 @@ const handleSubmit = async (e) => {
     debtDate: "Debt Date",
     debtAmount: "Debt Amount",
     interestRate: "Interest Rate",
-    photo: "Photo"
+    photo: "Photo",
+    comment: "comment"
   };
 
   // 🔍 Check for empty required fields
@@ -243,6 +245,8 @@ const handleSubmit = async (e) => {
         <input className="form-control mb-3" name="interestRate" type="number" placeholder="Interest Rate (%)" value={formData.interestRate} onChange={handleChange} disabled={loading} />
         <input className="form-control mb-3" name="interestAmount" type="text" placeholder="Interest Amount" value={formData.interestAmount} readOnly />
 
+
+
   <div className="mb-2">
 
   <div className="custom-file-input-wrapper">
@@ -283,6 +287,8 @@ const handleSubmit = async (e) => {
     disabled={loading}
   />
 </div>
+
+
 
 {/* Preview thumbnails */}
 {bondPreviews.map((img, index) => (
@@ -336,6 +342,14 @@ const handleSubmit = async (e) => {
   </div>
 )}
 
+        <textarea
+  className="form-control mb-3"
+  name="comment"
+  placeholder="Comment (e.g. user will settle in 2 months, good person, etc.)"
+  value={formData.comment}
+  onChange={handleChange}
+  disabled={loading}
+/>
 
         <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
           {editIndex ? "Update" : "Add"} Debtor

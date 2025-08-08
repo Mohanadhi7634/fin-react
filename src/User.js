@@ -269,7 +269,7 @@ const exportPDF = async () => {
     </div>
 
     <div className="text-end text-muted small pe-1">
-      <strong>Last Admin Logout:</strong> {lastLogout}
+      <strong>Last Updated date[Mohan]:</strong> {lastLogout}
     </div>
   </div>
 )}

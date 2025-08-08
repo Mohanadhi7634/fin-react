@@ -158,6 +158,8 @@ export const FullDetails = () => {
         debtor.interestPaidMonths?.map(e => formatMonth(e.month)).join(", ") || "None",
         "text-success",
       ],
+      ["Comment", debtor.comment || "N/A", "text-danger fw-bold"], 
+
     ].map(([label, value, className = ""]) => (
       <tr key={label} style={{ border: "1px solid black" }}>
         <th
@@ -180,14 +182,28 @@ export const FullDetails = () => {
           {value}
         </td>
       </tr>
+      
     ))}
   </tbody>
 </table>
+
 
       </div>
     </div>
   </div>
 </div>
+
+
+
+{/* <div className="mt-3 p-3 border rounded bg-white shadow-sm">
+  <h6 className="text-dark fw-bold mb-2 d-flex align-items-center">
+    <i className="bi bi-chat-left-text me-2 text-primary"></i> About Him
+  </h6>
+  <p className="text-dark mb-0" style={{ lineHeight: "1.6", fontSize: "1rem" }}>
+    {debtor.comment || "No comments available."}
+  </p>
+</div> */}
+
 
 
       <div className="d-flex flex-wrap justify-content-center gap-2 mt-4">
