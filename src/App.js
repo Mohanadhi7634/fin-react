@@ -19,6 +19,7 @@ import { OverallInOut } from "./OverallInOut";
 import CreateUser from "./CreateUser";
 
 
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem("isAuthenticated") === "true"
@@ -38,6 +39,7 @@ function App() {
     <Router>
       <div className="container py-4">
         <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
+
         <Routes>
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
           
@@ -53,6 +55,7 @@ function App() {
 
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
+        
       </div>
     </Router>
     

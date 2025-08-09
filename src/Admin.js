@@ -71,7 +71,8 @@ useEffect(() => {
     if (name === "debtAmount" || name === "interestRate") {
       const amount = parseFloat(updated.debtAmount) || 0;
       const rate = parseFloat(updated.interestRate) || 0;
-      updated.interestAmount = ((rate / 100) * amount).toFixed(2);
+      updated.interestAmount = Math.round((rate / 100) * amount);
+
     }
 
     if (name === "mobile") {
