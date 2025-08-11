@@ -357,7 +357,7 @@ const exportPDF = async () => {
     </td>
     <td></td>
     <td className={blurTotals ? "blurred-text" : ""}>
-      ₹{totalInterestAmount}
+      ₹{totalInterestAmount.toFixed()}
     </td>
     <td colSpan="3"></td>
   </tr>
