@@ -287,69 +287,66 @@ const exportPDF = async () => {
           ) : (
             <div className="table-responsive">
               <table className="table table-hover table-bordered mb-0 text-center align-middle">
-                <thead className="table-primary sticky-top shadow-sm fs-6" style={{ top: 0, zIndex: 1 }}>
+<thead className="table-primary sticky-top shadow-sm fs-6" style={{ top: 0, zIndex: 1 }}>
+  <tr>
+    <th>ID</th>
+    <th>Debt Date</th>
+    <th>Name</th>
+    <th>Address</th>
+    <th>Mobile number</th>
+    <th>Original Debt</th>
+    <th>Remaining Balance</th>
+    <th>Interest Rate (%)</th>
+    <th>Interest Amount</th>
+    <th className="text-start ps-3">Interest Paid</th>
+    <th>Status</th>
+    {/* Removed Action column */}
+  </tr>
+</thead>
 
-                  <tr>
-                    <th>ID</th>
-                    <th>Debt Date</th>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Mobile</th>
-                    <th>Original Debt</th>
-                    <th>Remaining Balance</th>
-                    <th>Interest Rate (%)</th>
-                    <th>Interest Amount</th>
-                    <th className="text-start ps-3">Interest Paid</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {debtors.map((debtor, index) => {
-                    const isAccountClosed = parseFloat(debtor.remainingBalance) === 0;
-                    return (
-                      <tr
-                        key={debtor._id || index}
-                        style={{ opacity: isAccountClosed ? 0.6 : 1 }}
-                      >
-                        <td>{debtor.id}</td>
-                        <td>{moment(debtor.debtDate).format("DD/MM/YYYY")}</td>
-                        <td>{debtor.name}</td>
-                        <td>{debtor.address}</td>
-                        <td>{debtor.mobile}</td>
-                        <td>₹{(debtor.originalDebtAmount || debtor.debtAmount)?.toFixed()}</td>
-                        <td>₹{debtor.remainingBalance?.toFixed()}</td>
-                        <td>{debtor.interestRate}%</td>
-                        <td>₹{debtor.interestAmount?.toFixed()}</td>
-                        <td className="text-start" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-                          {debtor.interestPaidMonths?.length ? (
-                            debtor.interestPaidMonths.map((item) => item.month).join(", ")
-                          ) : (
-                            <small className="text-muted">No payments</small>
-                          )}
-                        </td>
-                        <td>
-                          <span
-                            className={`badge rounded-pill fw-semibold ${
-                              isAccountClosed ? "bg-danger-subtle text-danger" : "bg-success-subtle text-success"
-                            }`}
-                          >
-                            {isAccountClosed ? "PAID" : "Pending"}
-                          </span>
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-outline-primary"
-                            onClick={() => handleNavigateToDetails(debtor._id)}
-                          >
-                            View
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
- <tfoot className="table-light fw-bold">
+<tbody>
+  {debtors.map((debtor, index) => {
+    const isAccountClosed = parseFloat(debtor.remainingBalance) === 0;
+    return (
+      <tr
+        key={debtor._id || index}
+        style={{
+          opacity: isAccountClosed ? 0.6 : 1,
+          cursor: "pointer"
+        }}
+        onClick={() => handleNavigateToDetails(debtor._id)}
+      >
+        <td>{debtor.id}</td>
+        <td>{moment(debtor.debtDate).format("DD/MM/YYYY")}</td>
+        <td>{debtor.name}</td>
+        <td>{debtor.address}</td>
+        <td>{debtor.mobile}</td>
+        <td>₹{(debtor.originalDebtAmount || debtor.debtAmount)?.toFixed()}</td>
+        <td>₹{debtor.remainingBalance?.toFixed()}</td>
+        <td>{debtor.interestRate}%</td>
+        <td>₹{debtor.interestAmount?.toFixed()}</td>
+        <td className="text-start" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          {debtor.interestPaidMonths?.length
+            ? debtor.interestPaidMonths.map((item) => item.month).join(", ")
+            : <small className="text-muted">No payments</small>
+          }
+        </td>
+        <td>
+          <span
+            className={`badge rounded-pill fw-semibold ${
+              isAccountClosed ? "bg-danger-subtle text-danger" : "bg-success-subtle text-success"
+            }`}
+          >
+            {isAccountClosed ? "PAID" : "Pending"}
+          </span>
+        </td>
+        {/* Removed Action button column */}
+      </tr>
+    );
+  })}
+</tbody>
+
+<tfoot className="table-light fw-bold bg-warning">
   <tr>
     <td colSpan="6" className="text-end">Total</td>
     <td className={blurTotals ? "blurred-text" : ""}>
